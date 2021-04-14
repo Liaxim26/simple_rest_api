@@ -14,4 +14,14 @@ $records_per_page = 5;
 
 // расчёт для запроса предела записей 
 $from_record_num = ($records_per_page * $page) - $records_per_page;
+
+$Url = $_GET['url_param'];
+$params = explode('/', $Url);
+$method = $_SERVER['REQUEST_METHOD'];
+
+$Module = $params[0];
+$entityId = $params[2];
+
+
+
 ?>

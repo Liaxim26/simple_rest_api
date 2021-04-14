@@ -230,7 +230,7 @@ public function readPaging($from_record_num, $records_per_page){
     return $stmt;
 }
 // чтение товаров с пагинацией 
-public function readPaging($from_record_num, $records_per_page){
+public function readPagidng($from_record_num, $records_per_page){
 
     // выборка 
     $query = "SELECT

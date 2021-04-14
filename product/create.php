@@ -6,6 +6,8 @@ header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
+include_once '../config/core.php';
+
 // получаем соединение с базой данных 
 include_once '../config/database.php';
 
@@ -17,9 +19,17 @@ $db = $database->getConnection();
 
 $product = new Product($db);
  
+//echo file_get_contents("php://input");
+
 // получаем отправленные данные 
 $data = json_decode(file_get_contents("php://input"));
- 
+
+//echo $entityId;
+
+echo $Url;
+echo '\n\n';
+echo $_SERVER['REQUEST_URI'];
+
 // убеждаемся, что данные не пусты 
 if (
     !empty($data->name) &&
