@@ -22,8 +22,13 @@ session_start();
 
 	//echo $action;
 
+	$allHeaders = getallheaders();
 
 	$data = json_decode(file_get_contents("php://input"));
+
+	require_once('config/database.php');
+	$database = new DataBase();
+	$conncetion = $database->getConnection();
 
 	switch ($entityType) {
 
@@ -58,19 +63,53 @@ session_start();
 	 		}
 	 		break;
 
-	 	case 'auth':
-	 		echo "Auth";
+	 	case 'login':
+	 		require_once("php-login-registration-api-master/login.php");
 	 		break;
 
 	 	case 'register':
 	 		require_once("php-login-registration-api-master/register.php");
-
-
-
 	 		break;
 
 	 	case 'users':
-	 		echo "Users";
+	 		if (count($url_array) > 1 && $url_array[1]) {
+	 			require_once('php-login-registration-api-master/middlewares/AuthChecker.php');
+	 			$entityId = $url_array[1];
+	 			$authChecker = new AuthChecker($allHeaders);
+	 			$retrievedId = $authChecker->retrieveUserId();
+
+	 			if (!$retrievedId) {
+	 				echo "Tocken is not valid anymore";
+	 				break;
+	 			}
+
+ 				if ($retrievedId != $entityId) {
+ 					echo "SOSIBIBU";
+ 					break;
+ 				}
+	 					
+				$userDao = new UserDao();
+	 			$user = $userDao->findById($entityId);
+
+	 			if (count($url_array) > 2 && $url_array[2]) {
+	 				$childEntityType = $url_array[2];
+	 				if ($childEntityType != "cart") {
+	 					break;
+	 				}
+	 				if ($method == 'GET') {
+	 					
+	 				}
+	 			} else {
+	 				if ($method == 'GET') {	
+		 				$user->password = null;
+		 				echo json_encode($user);
+		 			} else if ($method == 'PUT') {
+		 				$user->fullName = $data->fullName ?: $user->fullName;
+		 				$user->phoneNumber = $data->phoneNumber ?: $user->phoneNumber;
+		 				$userDao->update($user);
+		 			}
+	 			}
+	 		}
 	 		break;
 	 	
 	 	default:

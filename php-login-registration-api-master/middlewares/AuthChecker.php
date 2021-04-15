@@ -1,17 +1,18 @@
 <?php
-require __DIR__.'/../classes/JwtHandler.php';
-class Auth extends JwtHandler{
+require_once('php-login-registration-api-master/classes/JwtHandler.php');
+require_once('UserDao.php');
+class AuthChecker extends JwtHandler{
 
-    protected $db;
     protected $headers;
     protected $token;
-    public function __construct($db,$headers) {
+    protected $userDao;
+    public function __construct($headers) {
         parent::__construct();
-        $this->db = $db;
         $this->headers = $headers;
+        $this->userDao = new UserDao();
     }
 
-    public function isAuth(){
+    public function retrieveUserId(){
         if(array_key_exists('Authorization',$this->headers) && !empty(trim($this->headers['Authorization']))):
             $this->token = explode(" ", trim($this->headers['Authorization']));
             if(isset($this->token[1]) && !empty(trim($this->token[1]))):
@@ -20,7 +21,7 @@ class Auth extends JwtHandler{
 
                 if(isset($data['auth']) && isset($data['data']->user_id) && $data['auth']):
                     $user = $this->fetchUser($data['data']->user_id);
-                    return $user;
+                    return $user->id;
 
                 else:
                     return null;
@@ -38,23 +39,11 @@ class Auth extends JwtHandler{
         endif;
     }
 
-    protected function fetchUser($user_id){
-        try{
-            $fetch_user_by_id = "SELECT `name`,`email` FROM `users` WHERE `id`=:id";
-            $query_stmt = $this->db->prepare($fetch_user_by_id);
-            $query_stmt->bindValue(':id', $user_id,PDO::PARAM_INT);
-            $query_stmt->execute();
+    protected function fetchUser($userId) {
 
-            if($query_stmt->rowCount()):
-                $row = $query_stmt->fetch(PDO::FETCH_ASSOC);
-                return [
-                    'success' => 1,
-                    'status' => 200,
-                    'user' => $row
-                ];
-            else:
-                return null;
-            endif;
+        try {
+            $user = $this->userDao->findById($userId);
+            return $user;
         }
         catch(PDOException $e){
             return null;
