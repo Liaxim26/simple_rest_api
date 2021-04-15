@@ -59,7 +59,6 @@ session_start();
 	 			$response['products'] = $allFoundProduct;
 
 	 			print_r(json_encode($response));			
-
 	 		}
 	 		break;
 
@@ -90,15 +89,43 @@ session_start();
 	 					
 				$userDao = new UserDao();
 	 			$user = $userDao->findById($entityId);
-
 	 			if (count($url_array) > 2 && $url_array[2]) {
 	 				$childEntityType = $url_array[2];
 	 				if ($childEntityType != "cart") {
 	 					break;
 	 				}
+	 				require_once ('cartItemDao.php');
+	 				$cartItemDao = new cartItemDao();
 	 				if ($method == 'GET') {
-	 					
-	 				}
+	 					print_r($cartItemDao->findByUserId($user->id));
+	 				} else if ($method == 'POST'){
+	 					$cartItem = new CartItem();
+	 					$cartItem->userId = $data->userId;
+	 					$cartItem->productId = $data->productId;
+	 					$cartItem->quantity = $data->quantity;
+
+	 					print_r($cartItemDao->addToCart($cartItem));
+	 				} else if (count($url_array) > 3 && $url_array[3]) {
+			 				if($method == 'PUT') {
+			 					if (!$data->quantity) {
+			 						echo "No correct data";
+			 					}
+			 					$productId = $url_array[3];
+			 					$cartItem = new CartItem();
+			 					$cartItem->userId = $user->id;
+			 					$cartItem->productId = $productId;
+
+			 					$cartItem->quantity = $data->quantity ?: 1;
+								$cartItemDao->update($cartItem);	 					
+	 						} else if($method == 'DELETE') {
+			 					$productId = $url_array[3];
+			 					$cartItem->userId = $user->id;
+			 					$cartItem->productId = $productId;
+
+								$cartItemDao->deleteFromCart($userId, $productId);	 	
+			 				}
+		 			} 
+
 	 			} else {
 	 				if ($method == 'GET') {	
 		 				$user->password = null;
@@ -108,11 +135,12 @@ session_start();
 		 				$user->phoneNumber = $data->phoneNumber ?: $user->phoneNumber;
 		 				$userDao->update($user);
 		 			}
+	 			
 	 			}
-	 		}
-	 		break;
+		 	}
+		 	break;
 	 	
 	 	default:
 	 		break;
-	 }
+	}
  ?>
