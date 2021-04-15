@@ -32,7 +32,7 @@ CREATE TABLE `card_item` (
   `user_id` int(10) NOT NULL,
   `product_id` int(10) NOT NULL,
   `quantity` int(10) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB;
 
 -- --------------------------------------------------------
 
@@ -46,8 +46,7 @@ CREATE TABLE `product` (
   `category` varchar(20) NOT NULL,
   `price` int(10) NOT NULL,
   `image` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
+) ENGINE=InnoDB; 
 -- --------------------------------------------------------
 
 --
@@ -61,7 +60,7 @@ CREATE TABLE `user` (
   `username` int(64) NOT NULL,
   `password` char(64) NOT NULL,
   `phone_number` varchar(15) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB;
 
 --
 -- Индексы сохранённых таблиц
