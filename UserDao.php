@@ -81,7 +81,6 @@ class UserDao {
         $row = $statement->fetch(PDO::FETCH_ASSOC);
 
         if ($row) {
-            echo "oh";
         // установим значения свойств объекта 
             $user = $this->convertToUser($row);
             return $user;        

@@ -34,10 +34,11 @@ class ProductDAO {
         // получаем извлеченную строку 
         $row = $statement->fetch(PDO::FETCH_ASSOC);
 
-        // установим значения свойств объекта 
-        $products = $this->convertToProduct($row);
+        if ($row) {
+            return $this->convertToProduct($row);
+        }
 
-        return $products;    
+        return null;    
     }
 
     function count($filterParameters) {
@@ -63,12 +64,10 @@ class ProductDAO {
 
         $number = $statement->fetchColumn();
 
-
         return $number;
     }
 
     function findAll($page, $pageSize, $sortParameters, $filterParameters) {
-
         $query = "SELECT
                 id, name, category, price, image
             FROM
@@ -84,7 +83,6 @@ class ProductDAO {
 
         $statement = $this->connection->prepare($query);
 
-       
         $start = $pageSize * ($page-1);
 
         $statement->bindParam(":name", $filterParameters->name);
