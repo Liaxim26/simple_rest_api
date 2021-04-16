@@ -1,6 +1,13 @@
 <?php
 
 require_once('utilities.php');
+require_once('UserDao.php');
+require_once('php-login-registration-api-master/middlewares/AuthChecker.php');
+require_once('AuthController.php');
+require_once('ProductController.php');
+require_once('RegisterController.php');
+require_once('UserService.php');
+require_once('UserController.php');
 require_once('RequestProcessingException.php');
 
 class RequestDispatcher {
@@ -24,24 +31,33 @@ class RequestDispatcher {
 
 		switch ($entityType) {
 		 	case 'products':
-		 		return $this->handleProducts();
+		 		$controller = new ProductController(new ProductService(new ProductDao()));
+		 		break;
 
 		 	case 'login':
-		 		require_once("php-login-registration-api-master/login.php");
-		 		return;
+		 		$userDao = new UserDao();
+		 		$authChecker = new AuthChecker($userDao, $this->headers);
+		 		$controller = new AuthController($authChecker, $userDao);
+		 		break;
 
 		 	case 'register':
-		 		require_once("php-login-registration-api-master/register.php");
-		 		return;
+		 		$userDao = new UserDao();
+		 		$userService = new UserService($userDao);
+		 		$controller = new RegisterController($userService);
+		 		break;
 
 		 	case 'users':
-		 		$result = $this->handleUsers();
-		 		return $result;
+		 		$userDao = new UserDao();
+		 		$authChecker = new AuthChecker($userDao, $this->headers);
+		 		$userService = new UserService($userDao);
+		 		$controller = new UserController($userService, $authChecker);
 		 		break;
 		 	
 		 	default:
 		 		$this->notFound();
 	 	}
+
+	 	return $controller->handleRequest($this->relativeUrlParts, $this->method, $this->data);
 	}
 
 	private function handleProducts() {
@@ -141,7 +157,7 @@ class RequestDispatcher {
 	}
 
 	private function authentificate($userId, $allHeaders) {
-		require_once('php-login-registration-api-master/middlewares/AuthChecker.php');
+		
 		$authChecker = new AuthChecker($allHeaders);
 		$retrievedId = $authChecker->retrieveUserId();
 

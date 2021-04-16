@@ -24,6 +24,10 @@ try {
 	$response = ['message' => $e->getMessage()];
 	http_response_code($e->getHttpCode());
 	echo json_encode($response);
+} catch (Exception $e) {
+	$response = ['message' => $e->getMessage()];
+	http_response_code(501);
+	echo json_encode($response);
 }
 
 ?>

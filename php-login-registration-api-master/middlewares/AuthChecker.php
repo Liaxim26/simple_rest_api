@@ -2,51 +2,54 @@
 require_once('php-login-registration-api-master/classes/JwtHandler.php');
 require_once('UserDao.php');
 class AuthChecker extends JwtHandler{
-
-    protected $headers;
-    protected $token;
     protected $userDao;
-    public function __construct($headers) {
+    protected $headers;
+
+    public function __construct($userDao, $headers) {
         parent::__construct();
+        $this->userDao = $userDao;
         $this->headers = $headers;
-        $this->userDao = new UserDao();
     }
 
-    public function retrieveUserId(){
-        if(array_key_exists('Authorization',$this->headers) && !empty(trim($this->headers['Authorization']))):
-            $this->token = explode(" ", trim($this->headers['Authorization']));
-            if(isset($this->token[1]) && !empty(trim($this->token[1]))):
-                
-                $data = $this->_jwt_decode_data($this->token[1]);
-
-                if(isset($data['auth']) && isset($data['data']->user_id) && $data['auth']):
-                    $user = $this->fetchUser($data['data']->user_id);
-                    return $user->id;
-
-                else:
-                    return null;
-
-                endif; // End of isset($this->token[1]) && !empty(trim($this->token[1]))
-                
-            else:
-                return null;
-
-            endif;// End of isset($this->token[1]) && !empty(trim($this->token[1]))
-
-        else:
-            return null;
-
-        endif;
+    public function authorize($requestedUserId) {
+        $userId = $this->authentificateByTokenAndGet($this->headers);
+        if ($userId != $requestedUserId) {
+            throw RequestProcessingException(402, "Access to the data is not allowed");
+        }
     }
 
-    protected function fetchUser($userId) {
+    public function authentificateByTokenAndGet() {
+        if (!array_key_exists('Authorization', $this->headers)) {
+            throw new RequestProcessingException(402, "Missing Authorization header");
+        }
 
-        try {
-            $user = $this->userDao->findById($userId);
-            return $user;
+        $authHeader = trim($this->headers['Authorization']);
+
+        if (empty($authHeader)) {
+            throw new RequestProcessingException(406, "No authorization data provided");
         }
-        catch(PDOException $e){
-            return null;
+
+        $authHeaderParts = explode(" ", $authHeader);
+        $authType = trim($authHeaderParts[0] ?? "");
+        $encodedToken = trim($authHeaderParts[1] ?? "");
+
+        if ($authType != 'Bearer') {
+            throw new RequestProcessingException(408, "Unknown auth type");
         }
+        
+        $authData = (object) $this->_jwt_decode_data($encodedToken);
+
+        if(!$authData->$auth) {
+            throw new RequestProcessingException(405, $authData->message);
+        }
+
+        $token = $authData->data;
+        $userId = $token->user_id;
+
+        return $userId;
+    }
+
+    public function authentificateByCredentials() {
+        
     }
 }

@@ -68,6 +68,9 @@ class ProductDAO {
     }
 
     function findAll($page, $pageSize, $sortParameters, $filterParameters) {
+        $orderField = $sortParameters->field;
+        $direction = $sortParameters->direction;
+
         $query = "SELECT
                 id, name, category, price, image
             FROM
@@ -76,7 +79,7 @@ class ProductDAO {
                 name like concat('%',:name,'%') and
                 category = :category and
                 price between :minPrice and :maxPrice
-            ORDER BY $sortParameters
+            ORDER BY " . $orderField . " " . $direction . "
             LIMIT :number
             OFFSET :start 
             ";
@@ -92,10 +95,10 @@ class ProductDAO {
         $statement->bindParam(":start", $start, PDO::PARAM_INT); 
         $statement->bindParam(":number", $pageSize, PDO::PARAM_INT); 
 
+
         $statement->execute();
 
         $products = array();
-
 
         while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
             $product = $this->convertToProduct($row);

@@ -29,10 +29,10 @@ class UserDao {
         (`full_name`, `email`, `username`, `password`, `phone_number`)
         VALUES (:fullName, :email, :username, :password, :phoneNumber)";
         $statement = $this->connection->prepare($query);
-        $statement->bindValue(':fullName', htmlspecialchars(strip_tags($user->fullName)), PDO::PARAM_STR);
+        $statement->bindValue(':fullName', $user->fullName, PDO::PARAM_STR);
         $statement->bindValue(':email', $user->email, PDO::PARAM_STR);
         $statement->bindValue(':username', $user->username, PDO::PARAM_STR);
-        $statement->bindValue(':password', password_hash($user->password, PASSWORD_DEFAULT), PDO::PARAM_STR);
+        $statement->bindValue(':password', $user->password, PDO::PARAM_STR);
         $statement->bindValue(':phoneNumber', $user->phoneNumber, PDO::PARAM_STR);
 
         $statement->execute();  
@@ -49,10 +49,10 @@ class UserDao {
         WHERE id = :id";
         $statement = $this->connection->prepare($query);
         $statement->bindValue(':id', $user->id, PDO::PARAM_INT);
-        $statement->bindValue(':fullName', htmlspecialchars(strip_tags($user->fullName)), PDO::PARAM_STR);
+        $statement->bindValue(':fullName', $user->fullName, PDO::PARAM_STR);
         $statement->bindValue(':email', $user->email, PDO::PARAM_STR);
         $statement->bindValue(':username', $user->username, PDO::PARAM_STR);
-        $statement->bindValue(':password', password_hash($user->password, PASSWORD_DEFAULT), PDO::PARAM_STR);
+        $statement->bindValue(':password', $user->password, PDO::PARAM_STR);
         $statement->bindValue(':phoneNumber', $user->phoneNumber, PDO::PARAM_STR);
 
         $statement->execute();  
