@@ -86,7 +86,7 @@ class ProductDAO {
 
         $statement = $this->connection->prepare($query);
 
-        $start = $pageSize * ($page-1);
+        $start = ((int)$pageSize) * (((int)$page)-1);
 
         $statement->bindParam(":name", $filterParameters->name);
         $statement->bindParam(":category", $filterParameters->category);

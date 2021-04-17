@@ -2,18 +2,33 @@
 
 require_once('RequestDispatcher.php');
 
-header("Access-Control-Allow-Origin: *");
-header("Content-Type: application/json; charset=UTF-8");
+//header("Access-Control-Allow-Origin: *");
 
-$url_array = explode('/', $_SERVER['REQUEST_URI']);
+// header("Content-Type: application/json; charset=UTF-8");
+/*header("Access-Control-Request-Headers: Content-Type");
+header("Access-Control-Request-Method: OPTIONS");*/
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET");
+header("Access-Control-Allow-Headers: X-Requested-With, Content-Type");
+
+
+$url_array = explode('/', explode("?", $_SERVER['REQUEST_URI'])[0]);
 array_shift($url_array);
 array_shift($url_array);
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-$allHeaders = getallheaders();
+if ($method == 'OPTIONS') {
+	
+} else {
 
-$data = json_decode(file_get_contents("php://input"));
+$allHeaders = getallheaders();
+if ($method == 'GET') {
+	$data = (object) $_GET;
+	echo json_encode($data);
+} else {
+	$data = json_decode(file_get_contents("php://input"));
+}
 
 try {
 	$requestDispatcher = new RequestDispatcher($url_array, $allHeaders, $data, $method);
@@ -29,5 +44,5 @@ try {
 	http_response_code(501);
 	echo json_encode($response);
 }
-
+}
 ?>

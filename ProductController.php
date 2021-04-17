@@ -29,46 +29,31 @@ class ProductController implements RequestHandler
 	}
 
 	private function findProducts($data) {
-		$page = $data->page ?: 1;
-		$pageSize = $data->pageSize ?: 20;
-		$sortParameters = $this->completeSortParameters($data->sortParameters);
-		$filterParameters = $this->completeFilterParameters($data->filterParameters);
-
+		$page = (int) $data->page ?: 1;
+		$pageSize = (int) $data->pageSize ?: 20;
+		$sortParameters = $this->createSortParameters($data->sortField, $data->sortDirection);
+		$filterParameters = $this->createFilterParameters($data->name, $data->category, $data->minPrice, $data->maxPrice);
  		return $this->productService->findPaged($page, $pageSize, $sortParameters, $filterParameters);
 	}
 
-	private function completeSortParameters($sortParameters) {
-		if (!$sortParameters) {
-			$sortParameters = new stdClass();
-		}
+	private function createSortParameters($field, $direction) {
+		$sortParameters = new stdClass();
 
-		if (!$sortParameters->field) {
-			$sortParameters->field = 'id';
-		}
-
-		if (!$sortParameters->direction) {
-			$sortParameters->direction = 'ASC';
-		}
+		$sortParameters->field = $field ?: 'id';
+		$sortParameters->direction = $direction ?: 'ASC';
 
 		return $sortParameters;
 	}
 
-	private function completeFilterParameters($filterParameters) {
-		if (!$filterParameters) {
- 			$filterParameters = new stdClass();
- 		}
+	private function createFilterParameters($name, $category, $minPrice, $maxPrice) {
+		$filterParameters = new stdClass();
 
- 		if (!$filterParameters->priceRange) {
- 			$filterParameters->priceRange = new stdClass();
- 		}
+		$filterParameters->name = $name ?: "";
+		$filterParameters->category = $category;
 
- 		if (!$filterParameters->priceRange->min) {
- 			$filterParameters->priceRange->min = 0;
- 		}
-
- 		if (!$filterParameters->priceRange->max) {
- 			$filterParameters->priceRange->max = 1000000;
- 		}
+ 		$filterParameters->priceRange = new stdClass();
+ 		$filterParameters->priceRange->min = $minPrice ?: 0;
+ 		$filterParameters->priceRange->max = $maxPrice ?: 1000000;
 
  		return $filterParameters;
 	}

@@ -41,9 +41,6 @@ class UserService
 		if(strlen($newUser->password) < 8) {
 		    throw new RequestProcessingException(422, 'Your password must be at least 8 characters long!');
 		}
-		if(strlen($newUser->fullName) < 3) {
-		    throw new RequestProcessingException(422, 'Your name must be at least 3 characters long!');
-		}
 
 	    if ($this->userDao->findByEmail($newUser->email)) {
 	        throw new RequestProcessingException(422, 'This E-mail already in use!');
