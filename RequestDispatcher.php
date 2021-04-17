@@ -25,7 +25,6 @@ class RequestDispatcher {
 
 	function dispatch() {
 		$entityType = getOrNull($this->relativeUrlParts, 0);
-		echo "entityType" . $entityType;
 		if (!$entityType) {
 			$this->notFound();
 		}

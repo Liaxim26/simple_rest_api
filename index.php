@@ -25,7 +25,6 @@ if ($method == 'OPTIONS') {
 $allHeaders = getallheaders();
 if ($method == 'GET') {
 	$data = (object) $_GET;
-	echo json_encode($data);
 } else {
 	$data = json_decode(file_get_contents("php://input"));
 }
