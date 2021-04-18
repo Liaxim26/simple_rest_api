@@ -12,7 +12,7 @@ class AuthChecker extends JwtHandler{
     }
 
     public function authorize($requestedUserId) {
-        $userId = $this->authentificateByTokenAndGet($this->headers);
+        $userId = $this->authentificateByTokenAndGet();
         if ($userId != $requestedUserId) {
             throw RequestProcessingException(402, "Access to the data is not allowed");
         }
@@ -39,7 +39,7 @@ class AuthChecker extends JwtHandler{
         
         $authData = (object) $this->_jwt_decode_data($encodedToken);
 
-        if(!$authData->$auth) {
+        if(!$authData->auth) {
             throw new RequestProcessingException(405, $authData->message);
         }
 
@@ -50,6 +50,6 @@ class AuthChecker extends JwtHandler{
     }
 
     public function authentificateByCredentials() {
-        
+
     }
 }

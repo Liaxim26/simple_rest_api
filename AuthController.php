@@ -54,7 +54,10 @@ require_once('RequestHandler.php');
 			        array("user_id" => $user->id)
 			    );
 
-			    $response = ['token'=>$token];
+			    $response = [
+			    	'token' => $token,
+			    	'userId' => $user->id
+			    ];
 			    
 			    return $response;
 			} else {
