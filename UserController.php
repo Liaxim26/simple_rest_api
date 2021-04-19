@@ -30,7 +30,7 @@ class UserController implements RequestHandler
 			if ($childEntityType != "cart") {
 				throw new RequestProcessingException(404, "Not found");
 			}
-			return $this->handleCard($userId);
+			return $this->handleCard($userId, $relativeUrlParts, $method, $data);
 		}
 		
 		if ($method == 'GET') {
@@ -51,14 +51,14 @@ class UserController implements RequestHandler
  		if ($productId) {
  			switch ($method) {
  				case 'PUT':
- 					if (!$this->data->quantity) {
+ 					if (!$data->quantity) {
 						echo "No correct data";
 					}
 					$cartItem = new CartItem();
 					$cartItem->userId = $userId;
 					$cartItem->productId = $productId;
 
-					$cartItem->quantity = $this->data->quantity ?: 1;
+					$cartItem->quantity = $data->quantity ?: 1;
 					$cartItemDao->update($cartItem);
  					return;
 
@@ -79,8 +79,8 @@ class UserController implements RequestHandler
 				case 'POST':
 					$cartItem = new CartItem();
 					$cartItem->userId = $userId;
-					$cartItem->productId = $this->data->productId;
-					$cartItem->quantity = $this->data->quantity;
+					$cartItem->productId = $data->productId;
+					$cartItem->quantity = $data->quantity;
 					$cartItemDao->addToCart($cartItem);
 					return;
 				

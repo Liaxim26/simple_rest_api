@@ -91,7 +91,7 @@ class UserDao {
 
     private function convertToUser($row) {
         $user = new User();
-        $user->id = $row['id'];
+        $user->id = (int) $row['id'];
         $user->fullName = $row['full_name'];
         $user->email = $row['email'];
         $user->username = $row['username'];

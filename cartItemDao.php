@@ -1,5 +1,7 @@
 <?php
 
+require_once('Product.php');
+require_once('RequestProcessingException.php');
 require_once('config/database.php');
 require_once('cartItem.php');
 
@@ -15,9 +17,16 @@ class CartItemDAO {
     function findByUserId($id) {
         $query = "
             SELECT
-                user_id, product_id, quantity
+                cart.user_id as userId,
+                cart.quantity as quantity,
+                product.id as id,
+                product.name as name,
+                product.category as category,
+                product.price as price,
+                product.image as image
+
             FROM
-                " . $this->table_name . "
+                " . $this->table_name . " cart LEFT JOIN product product on cart.product_id = product.id 
             WHERE 
                 user_id = :id";
 
@@ -64,9 +73,8 @@ class CartItemDAO {
 
     function addToCart($cartItem) {
 
-        if ($this->checkCartItem($cartItem->userId, $cartItem->productId)){
-            echo "This product is alredy preset in the cart!";
-            return;
+        if ($this->checkCartItem($cartItem->userId, $cartItem->productId)) {
+             throw new RequestProcessingException(408, "This product is alredy preset in the cart!");
         }
 
         $query = "INSERT INTO " . $this->table_name . " 
@@ -205,9 +213,17 @@ class CartItemDAO {
 */
     private function convertToCartItem($row) {
         $cartItem = new CartItem();
-        $cartItem->userId = $row['user_id'];
-        $cartItem->productId = $row['product_id'];
-        $cartItem->quantity = $row['quantity'];
+        $cartItem->userId = (int) $row['userId'];
+        $cartItem->quantity = (int) $row['quantity'];
+        
+        $product = new Product();
+        $product->id = (int) $row['id'];
+        $product->name = $row['name'];
+        $product->category = $row['category'];
+        $product->price = (int) $row['price'];
+        $product->image = $row['image'];
+
+        $cartItem->product = $product;
 
         return $cartItem;
     }

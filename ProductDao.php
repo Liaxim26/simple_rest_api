@@ -86,7 +86,7 @@ class ProductDAO {
 
         $statement = $this->connection->prepare($query);
 
-        $start = ((int)$pageSize) * (((int)$page)-1);
+        $start = $pageSize * ($page-1);
 
         $statement->bindParam(":name", $filterParameters->name);
         $statement->bindParam(":category", $filterParameters->category);
@@ -110,10 +110,10 @@ class ProductDAO {
 
     private function convertToProduct($row) {
         $product = new Product();
-        $product->id = $row['id'];
+        $product->id = (int) $row['id'];
         $product->name = $row['name'];
         $product->category = $row['category'];
-        $product->price = $row['price'];
+        $product->price = (int) $row['price'];
         $product->image = $row['image'];
         return $product;
     }

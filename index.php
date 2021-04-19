@@ -4,11 +4,11 @@ require_once('RequestDispatcher.php');
 
 //header("Access-Control-Allow-Origin: *");
 
-// header("Content-Type: application/json; charset=UTF-8");
+header("Content-Type: application/json; charset=UTF-8");
 /*header("Access-Control-Request-Headers: Content-Type");
 header("Access-Control-Request-Method: OPTIONS");*/
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, PUT");
+header("Access-Control-Allow-Methods: GET, POST, DELETE, PUT");
 header("Access-Control-Allow-Headers: X-Requested-With, Content-Type, Authorization");
 
 
